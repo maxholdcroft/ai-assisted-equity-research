@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Environments and secrets
+.venv/
+.env
+
+# Editor and operating-system files
+.vscode/
+.DS_Store
+
+# Temporary development scripts and local test output
+work/
