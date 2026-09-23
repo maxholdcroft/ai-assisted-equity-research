@@ -2,11 +2,11 @@
 
 A local-first equity-research MVP that combines deterministic Python analysis with evidence-constrained local LLM interpretation and an independent AI risk review.
 
-The project is designed to demonstrate responsible AI use in an investment-research setting:
+The project is designed to demonstrate AI inference power from given data and metrics, highlighting any strengths and weaknesses:
 
-> Python is used to calculate facts and metrics. The LLM only interprets them.
+Python is used to calculate facts and metrics. The LLM only interprets them.
 
-> Educational research demonstration only. This application does not provide investment advice.
+Educational research demonstration only. This application does not provide investment advice.
 
 ## Features
 
@@ -47,7 +47,7 @@ Publication gate + Streamlit research report
 - Pandas, NumPy, Plotly
 - yfinance / Yahoo Finance
 - Pydantic
-- Ollama with Qwen3 8B
+- Ollama with Qwen3:8B
 - Pytest
 
 ## Installation
@@ -66,7 +66,7 @@ Install the required local model:
 ollama pull qwen3:8b
 ```
 
-Ollama must be running locally at `http://localhost:11434`. If necessary:
+Ollama must be running locally at `http://localhost:11434`, the application doesn't require any cloud-based AI API If necessary:
 
 ```zsh
 ollama serve
@@ -98,16 +98,16 @@ UK listings generally require the `.L` suffix.
 
 ### Deterministic analysis
 
-The application calculates the following in Python rather than asking the LLM to calculate them:
+I have chosen for the app to calculate the following in Python rather than asking the LLM to calculate them, to ensure all data is handled identically for fairer comparison:
 
-| Area | Metrics |
-|---|---|
-| Market performance | 1Y return, 3M return, 50/200-day moving averages |
-| Risk | Annualised volatility, maximum drawdown |
-| Financial performance | Revenue, revenue growth, net income, net-income growth |
-| Profitability | Operating margin, net margin |
-| Cash flow | Operating cash flow, free cash flow, free-cash-flow margin |
-| Balance sheet | Cash and short-term investments, total debt, debt-to-equity |
+Area | Metrics
+
+Market performance | 1Y return, 3M return, 50/200-day moving averages
+Risk | Annualised volatility, maximum drawdown
+Financial performance | Revenue, revenue growth, net income, net-income growth
+Profitability | Operating margin, net margin
+Cash flow | Operating cash flow, free cash flow, free-cash-flow margin
+Balance sheet | Cash and short-term investments, total debt, debt-to-equity
 
 Unavailable provider fields remain `null`; they are never converted to zero or inferred by the model.
 
@@ -118,13 +118,13 @@ The local analyst receives only the validated `CompanySnapshot`. It is instructe
 The application then applies two checks:
 
 1. **Deterministic evidence validation** verifies that every cited evidence path exists in the snapshot.
-2. **Independent AI risk review** challenges unsupported claims, qualitative overreach, missing limitations, and recommendation confidence.
+2. **Independent AI risk review** designed to challenge unsupported claims, qualitative overreach, missing limitations, and recommendation confidence.
 
-The publication gate does not overwrite the analyst. It preserves the full audit trail and marks the result:
+The publication gate does not overwrite the analyst. It keeps all of the recommendations and shows the full trail between agents:
 
-- `APPROVED` — deterministic validation passed and the critic supports the recommendation
+- `APPROVED` — the critic supports the recommendation
 - `QUALIFIED` — the critic partially supports it
-- `REQUIRES_REVIEW` — deterministic validation fails, the critic rejects the recommendation, or high-severity concerns are found
+- `REQUIRES_REVIEW` — the critic rejects the recommendation, or high-severity concerns are found
 
 ## Testing
 
@@ -138,26 +138,26 @@ The current tests cover deterministic metric calculations and ensure missing inp
 
 ### Cross-company batch testing
 
-The data and deterministic pipeline were tested successfully across ten companies:
+The data and deterministic pipeline were tested successfully across 10 companies within 2 markets and 8 sectors:
 
-| Segment | Tickers |
-|---|---|
-| US technology | AAPL |
-| US financials | JPM |
-| US industrials | CAT |
-| US consumer | COST |
-| US high-growth / volatile | TSLA |
-| US healthcare | UNH |
-| UK healthcare | AZN.L |
-| UK financials | HSBA.L |
-| UK energy | BP.L |
-| UK materials | RIO.L |
+Segment | Ticker
 
-All ten completed data retrieval and deterministic analysis without runtime failure. JPM and HSBA.L returned no generic operating margin, which is retained as unavailable because this metric is not directly comparable for banks.
+US technology | AAPL 
+US financials | JPM 
+US industrials | CAT 
+US consumer | COST 
+US high-growth / volatile | TSLA 
+US healthcare | UNH 
+UK healthcare | AZN.L
+UK financials | HSBA.L
+UK energy | BP.L
+UK materials | RIO.L
 
-A full local-AI batch run also completed for all ten companies. Most analyst recommendations were `HOLD` with low critic confidence and were gated as `REQUIRES_REVIEW`; this is an intentional result of the limited, valuation-free evidence set rather than a forced directional recommendation.
+All 10 completed data retrieval and deterministic analysis without runtime failure. JPM and HSBA.L returned no generic operating margin, which is retained as unavailable because this metric is not directly comparable for banks.
 
-Run the checks locally:
+A full local-AI batch run also completed for all 10 companies. Most analyst recommendations were `HOLD` with low critic confidence and were gated as `REQUIRES_REVIEW`; this is an intentional result of the limited, valuation-free evidence set rather than a forced directional recommendation.
+
+To run the checks locally:
 
 ```zsh
 python -m work.batch_test
@@ -171,15 +171,4 @@ python -m work.batch_test --full-ai
 - The application does not include forecasts, news, estimates, peer comparisons, transcripts, or SEC/RNS filings.
 - Generic operating margin is not meaningful for banks; a production version would use bank-specific measures such as net interest margin, CET1, ROE, and loan-loss provisions.
 - Local LLM output remains probabilistic. Structured output, deterministic validation, and an AI critic reduce risk but do not eliminate it.
-- This is not financial advice.
-
-## Future Improvements
-
-- Add a licensed production-grade financial-data provider
-- Verify financial-statement currency and add carefully aligned valuation metrics
-- Add sector-specific metric frameworks, starting with banks
-- Add SEC/RNS filing retrieval and citation-level evidence
-- Compare the target company with a peer group
-- Persist analyses and model/audit metadata
-- Add GitHub Actions for automated testing
-- Add benchmark datasets for evaluating analyst and critic quality
+- Local LLM model used is small and trained in 2024 and its abilities are therefore far behind the capabilities of modern LLM's offered by OpenAI and Anthropic for example.
